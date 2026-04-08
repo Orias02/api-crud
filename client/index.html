@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Client API Post</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<h1>Client API Post</h1>
+
+<!-- GET -->
+<h2>Daftar Post</h2>
+<button onclick="getPosts()">GET POSTS</button>
+<ul id="postList"></ul>
+
+<!-- POST -->
+<h2>Tambah Post</h2>
+<input type="text" id="title" placeholder="Title">
+<input type="text" id="content" placeholder="Content">
+<button onclick="addPost()">POST</button>
+
+<!-- UPDATE -->
+<h2>Update Post</h2>
+<input type="number" id="updateId" placeholder="ID">
+<input type="text" id="updateTitle" placeholder="Title Baru">
+<input type="text" id="updateContent" placeholder="Content Baru">
+<button onclick="updatePost()">UPDATE</button>
+
+<script>
+const API = "http://127.0.0.1:8000/api/posts";
+
+// GET
+function getPosts() {
+    axios.get(API)
+    .then(res => {
+        let list = document.getElementById("postList");
+        list.innerHTML = "";
+
+        res.data.forEach(post => {
+            let li = document.createElement("li");
+            li.innerText = post.id + ". " + post.title + " - " + post.content;
+            list.appendChild(li);
+        });
+    })
+    .catch(err => console.log(err));
+}
+
+// POST
+function addPost() {
+    axios.post(API, {
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+    })
+    .then(res => {
+        alert("Post berhasil ditambahkan!");
+        getPosts();
+    })
+    .catch(err => {
+        alert("Error: " + JSON.stringify(err.response.data));
+    });
+}
+
+// UPDATE
+function updatePost() {
+    let id = document.getElementById("updateId").value;
+
+    axios.put(API + "/" + id, {
+        title: document.getElementById("updateTitle").value,
+        content: document.getElementById("updateContent").value
+    })
+    .then(res => {
+        alert("Post berhasil diupdate!");
+        getPosts();
+    })
+    .catch(err => {
+        alert("Error: " + JSON.stringify(err.response.data));
+    });
+}
+</script>
+
+</body>
+</html>

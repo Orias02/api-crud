@@ -14,8 +14,18 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $post = Post::create($request->all());
-        return response()->json($post, 201);
+        // VALIDASI
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $post = Post::create($validated);
+
+        return response()->json([
+            'message' => 'Post berhasil ditambahkan',
+            'data' => $post
+        ], 201);
     }
 
     public function show(string $id)
@@ -26,13 +36,27 @@ class PostController extends Controller
     public function update(Request $request, string $id)
     {
         $post = Post::findOrFail($id);
-        $post->update($request->all());
-        return response()->json($post);
+
+        // VALIDASI
+        $validated = $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'content' => 'sometimes|string',
+        ]);
+
+        $post->update($validated);
+
+        return response()->json([
+            'message' => 'Post berhasil diupdate',
+            'data' => $post
+        ]);
     }
 
     public function destroy(string $id)
     {
         Post::destroy($id);
-        return response()->json(['message' => 'Deleted']);
+
+        return response()->json([
+            'message' => 'Post berhasil dihapus'
+        ]);
     }
 }
